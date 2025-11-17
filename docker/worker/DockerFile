@@ -17,24 +17,13 @@ RUN dotnet publish -c Release -o /app/publish --no-restore
 
 
 # -------------------------
-# 2. RUNTIME STAGE
+# 2. DISTROLESS RUNTIME STAGE
 # -------------------------
-FROM mcr.microsoft.com/dotnet/runtime:7.0 AS final
-
-# Create a non-root user (uid 1000)
-RUN adduser --disabled-password --home /app workeruser
+FROM gcr.io/distroless/dotnet
 
 WORKDIR /app
 
-# Copy published output from build stage
+# Distroless already runs as non-root by default
 COPY --from=build /app/publish /app/
 
-# Change ownership to non-root user
-RUN chown -R workeruser:workeruser /app
-
-# Drop to non-root user
-USER workeruser
-
-# (Optional) Hardening - run container with read-only filesystem
-
-ENTRYPOINT ["dotnet", "Worker.dll"]
+ENTRYPOINT ["Worker"]
