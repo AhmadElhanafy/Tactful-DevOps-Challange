@@ -1,0 +1,78 @@
+version: "3.9"
+networks:
+  frontend:
+  backend:
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server","--appendonly","yes"]
+    volumes:
+      - redisdata:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build: ./docker/worker
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend
+
+  vote:
+    build: ./docker/vote
+    ports:
+      - "8080:8080"
+      - "80:8080"
+    depends_on:
+      - result
+    networks:
+      - frontend
+      - backend
+
+  result:
+    build: ./docker/result
+    ports:
+      - "8081:4000"
+    networks:
+      - frontend
+      - backend
+
+  seed:
+    build: ./docker/seed
+    depends_on:
+      db:
+        condition: service_healthy
+      vote:
+        condition: service_started
+    networks:
+      - frontend
+      - backend
+
+volumes:
+  pgdata:
+  redisdata:

@@ -23,7 +23,7 @@ WORKDIR /app
 
 COPY --from=builder /app /app
 
-EXPOSE 8080
+EXPOSE 4000
 
 # No healthcheck here — must be added in Kubernetes
 
