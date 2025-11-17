@@ -19,11 +19,10 @@ RUN dotnet publish -c Release -o /app/publish --no-restore
 # -------------------------
 # 2. DISTROLESS RUNTIME STAGE
 # -------------------------
-FROM gcr.io/distroless/dotnet
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-jammy-chiseled
 
 WORKDIR /app
 
-# Distroless already runs as non-root by default
 COPY --from=build /app/publish /app/
 
-ENTRYPOINT ["Worker"]
+ENTRYPOINT ["dotnet", "Worker.dll"]
