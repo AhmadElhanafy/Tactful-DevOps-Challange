@@ -5,7 +5,7 @@ networks:
 
 services:
   db:
-    image: postgres:15-alpine
+    build: ./docker/postgres
     environment:
       POSTGRES_DB: db
       POSTGRES_USER: postgres
@@ -15,20 +15,20 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "/usr/local/bin/postgres-health.sh" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
-    image: redis:7-alpine
+    build: ./docker/redis
     command: ["redis-server","--appendonly","yes"]
     volumes:
       - redisdata:/data
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "/usr/local/bin/redis-health.sh" ]
       interval: 10s
       timeout: 5s
       retries: 5
