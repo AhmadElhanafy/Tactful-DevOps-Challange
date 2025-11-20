@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-data
+  namespace: {{ .Values.global.namespace }}
+spec:
+  backoffLimit: {{ .Values.seed.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        app: seed-data
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: seed
+          image: {{ tpl .Values.seed.image . | quote }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"

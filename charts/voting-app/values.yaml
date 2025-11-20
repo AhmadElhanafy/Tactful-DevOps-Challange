@@ -1,0 +1,55 @@
+# Global
+global:
+  namespace: app
+  imagePullPolicy: IfNotPresent
+  acr: "tactfulvotingappacr.azurecr.io"
+
+# Toggle installation of DBs (if you already have them, set to false)
+databases:
+  install: false
+
+postgres:
+  # These should be sealed or provided through External Secrets in prod
+  enabled: true
+  image: "bitnami/postgresql:15"
+  persistence:
+    enabled: true
+    size: 5Gi
+  postgresqlDatabase: voting
+  postgresqlUsername: postgres
+  postgresqlPassword: "postgres" # replace in prod
+
+redis:
+  enabled: true
+  image: "bitnami/redis:8"
+  usePassword: false
+  persistence:
+    enabled: true
+    size: 2Gi
+
+# App images
+vote:
+  replicaCount: 2
+  image: "{{ .Values.global.acr }}/voteimage:latest"
+  port: 80
+
+result:
+  replicaCount: 2
+  image: "{{ .Values.global.acr }}/resultimage:latest"
+  port: 80
+  targetPort: 4000
+
+worker:
+  replicaCount: 1
+  image: "{{ .Values.global.acr }}/workerimage:latest"
+  port: 80
+
+seed:
+  image: "{{ .Values.global.acr }}/seedimage:latest"
+  backoffLimit: 0
+
+
+# DNS/service names for DBs in db namespace
+externalServices:
+  postgresServiceFQDN: "postgres-postgresql.db.svc.cluster.local"
+  redisServiceFQDN: "redis-master.db.svc.cluster.local"
