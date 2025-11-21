@@ -16,9 +16,6 @@ postgres:
   persistence:
     enabled: true
     size: 5Gi
-  username: "postgres"
-  password: "postgres"
-  database: "votingdb"
 
 redis:
   enabled: true
