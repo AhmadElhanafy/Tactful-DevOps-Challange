@@ -8,5 +8,5 @@ spec:
   selector:
     app: result
   ports:
-    - port: {{ .Values.result.port }}
+    - port: {{ .Values.result.targetPort }}
       targetPort: {{ .Values.result.targetPort }}

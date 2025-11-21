@@ -4,8 +4,9 @@ metadata:
   name: redis
   namespace: app
 spec:
-  type: ClusterIP
+  type: ExternalName
   ports:
     - port: 6379
       targetPort: 6379
+      protocol: TCP
   externalName: {{ .Values.externalServices.redisServiceFQDN }}

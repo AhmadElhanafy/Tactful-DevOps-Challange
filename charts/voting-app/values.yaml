@@ -6,22 +6,24 @@ global:
 
 # Toggle installation of DBs (if you already have them, set to false)
 databases:
-  install: false
+  install: true
 
 postgres:
   # These should be sealed or provided through External Secrets in prod
   enabled: true
-  image: "bitnami/postgresql:15"
+  image: "bitnami/postgresql:sha256-661beef0fb813d661a9b1f0156bfb685a5a176fe95b108f6a61e2532056c58b7"
+  port: 5432
   persistence:
     enabled: true
     size: 5Gi
-  postgresqlDatabase: voting
-  postgresqlUsername: postgres
-  postgresqlPassword: "postgres" # replace in prod
+  username: "postgres"
+  password: "postgres"
+  database: "votingdb"
 
 redis:
   enabled: true
-  image: "bitnami/redis:8"
+  port: 6379
+  image: "bitnami/redis:sha256-b5d1b1724b34690718f9368dd12a7b15ab2345afe3bf4d23082d69a8da23391e"
   usePassword: false
   persistence:
     enabled: true
@@ -31,7 +33,7 @@ redis:
 vote:
   replicaCount: 2
   image: "{{ .Values.global.acr }}/voteimage:latest"
-  port: 80
+  port: 8080
 
 result:
   replicaCount: 2
@@ -51,5 +53,5 @@ seed:
 
 # DNS/service names for DBs in db namespace
 externalServices:
-  postgresServiceFQDN: "postgres-postgresql.db.svc.cluster.local"
-  redisServiceFQDN: "redis-master.db.svc.cluster.local"
+  postgresServiceFQDN: "postgres.db.svc.cluster.local"
+  redisServiceFQDN: "redis.db.svc.cluster.local"
