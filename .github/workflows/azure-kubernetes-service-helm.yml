@@ -45,7 +45,7 @@ jobs:
       - name: 🏗️ Build & Push Vote App
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: docker/vote/
           file: docker/vote/Dockerfile
           push: true
           tags: ${{ env.AZURE_CONTAINER_REGISTRY }}/voteimage:${{ env.TAG }}
@@ -54,8 +54,8 @@ jobs:
       - name: 🏗️ Build & Push Worker App
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: docker/worker/Dockerfile
+          context: docker/worker/
+          file: docker/vote/Dockerfile
           push: true
           tags: ${{ env.AZURE_CONTAINER_REGISTRY }}/workerimage:${{ env.TAG }}
 
@@ -63,8 +63,8 @@ jobs:
       - name: 🏗️ Build & Push Result App
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: docker/result/Dockerfile
+          context: ./docker/result/
+          file: docker/vote/Dockerfile
           push: true
           tags: ${{ env.AZURE_CONTAINER_REGISTRY }}/resultimage:${{ env.TAG }}
           
