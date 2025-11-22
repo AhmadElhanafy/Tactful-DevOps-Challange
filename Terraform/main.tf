@@ -20,12 +20,12 @@ provider "azurerm" {
 # RESOURCE GROUP
 #
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.project_name}-rg"
+  name     = "${var.project_name}-${terraform.workspace}-rg"
   location = var.location
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "tactfulvotingappacr"
+  name                = "tactfulvoting${terraform.workspace}acr"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
@@ -60,7 +60,7 @@ resource "azurerm_subnet" "aks_subnet" {
 # AKS CLUSTER
 #
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "${var.project_name}-aks"
+  name                = "${var.project_name}-${terraform.workspace}-aks"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "${var.project_name}-dns"
